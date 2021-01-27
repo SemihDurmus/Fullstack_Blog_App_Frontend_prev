@@ -1,22 +1,31 @@
+import { useContext } from "react";
 import { useFormik } from "formik";
+import { useHistory } from "react-router-dom";
 
-const fetchData = (props) => {
-  const loginURL =
-    "http://fs-blog-app-backend-django.herokuapp.com/auth/login/";
+import { Context } from "../context/Context";
+import { postData } from "../utils/Utils";
 
-  fetch(loginURL, {
-    method: "POST",
-    headers: {
-      "Content-type": "application/json",
-    },
-    body: JSON.stringify({
-      username: props.username,
-      password: props.password,
-    }),
-  }).then((results) => console.log(results.json()));
-};
-
+// ------------MAIN FUNCTION------------------------
 export default function SignIn() {
+  const { token, setToken } = useContext(Context);
+  const history = useHistory();
+
+  const fetchData = async (values) => {
+    try {
+      const result = await postData("auth/login/", values);
+      setToken(result?.data?.key);
+      localStorage.setItem("token", result?.data?.key);
+      history.push("/home");
+    } catch ({ response }) {
+      if (response) {
+        console.log(response.data.non_field_errors[0]);
+      } else {
+        console.log("Something went wrong!");
+      }
+    }
+  };
+
+  // ------------FORMIK-------------
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -26,7 +35,8 @@ export default function SignIn() {
       fetchData(values);
     },
   });
-  console.log(formik);
+
+  // ------------RETURN-------------
   return (
     <div>
       <form onSubmit={formik.handleSubmit}>

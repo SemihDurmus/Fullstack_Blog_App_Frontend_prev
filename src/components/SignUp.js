@@ -1,25 +1,22 @@
+// import { useHistory } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
-const fetchData = (props) => {
-  const registerURL =
-    "http://fs-blog-app-backend-django.herokuapp.com/user/register/";
-
-  fetch(registerURL, {
-    method: "POST",
-    headers: {
-      "Content-type": "application/json",
-    },
-    body: JSON.stringify({
-      username: props.username,
-      email: props.email,
-      password: props.password,
-      password2: props.password2,
-    }),
-  }).then((results) => console.log(results.json()));
-};
+import { postData } from "../utils/Utils";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function SignUp() {
+  //let history = useHistory();
+  const fetchData = (values) => {
+    postData("user/register/", values)
+      .then((data, err) => {
+        toast("Successfully registered");
+        alert("Successfully registered, You can Log In now");
+      })
+      .catch((err) => {
+        toast(err?.message || "An error occured");
+      });
+  };
+
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -47,9 +44,10 @@ export default function SignUp() {
       fetchData(values);
     },
   });
-  console.log(formik);
+
   return (
     <div>
+      <ToastContainer />
       <form onSubmit={formik.handleSubmit}>
         <label htmlFor="username">User name</label>
         <input

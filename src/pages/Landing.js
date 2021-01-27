@@ -1,7 +1,7 @@
-import SignUp from "./components/SignUp";
-import SignIn from "./components/SignIn";
+import SignUp from "../components/SignUp";
+import SignIn from "../components/SignIn";
 
-function App() {
+function Landing() {
   return (
     <div>
       <br />
@@ -16,4 +16,4 @@ function App() {
   );
 }
 
-export default App;
+export default Landing;
