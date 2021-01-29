@@ -1,11 +1,16 @@
-// import { useHistory } from "react-router-dom";
+import "./SignInUp.css";
+
+import PersonIcon from "@material-ui/icons/Person";
+import LockIcon from "@material-ui/icons/Lock";
+import EmailIcon from "@material-ui/icons/Email";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { postData } from "../utils/Utils";
 import { toast, ToastContainer } from "react-toastify";
 
+// ------------MAIN FUNCTION------------------------
 export default function SignUp() {
-  //let history = useHistory();
   const fetchData = (values) => {
     postData("user/register/", values)
       .then((data, err) => {
@@ -13,10 +18,26 @@ export default function SignUp() {
         alert("Successfully registered, You can Log In now");
       })
       .catch((err) => {
-        toast(err?.message || "An error occured");
+        alert(err?.message || "An error occured");
       });
   };
+  const refresh = () => {
+    window.location.reload(false);
+  };
+  // ------------INLINE STYLES--------
+  const iconContainerStyle = {
+    width: "300px",
+    height: "40px",
+    position: "relative",
+    margin: "30px auto",
+  };
+  const iconStyle = {
+    position: "absolute",
+    top: "10px",
+    left: "15px",
+  };
 
+  // ------------FORMIK-------------
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -30,7 +51,7 @@ export default function SignUp() {
         .required("Required"),
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string()
-        .required("No password provided.")
+        .required("No password provided")
         .min(6, "Should be min 6 characters")
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
@@ -45,57 +66,77 @@ export default function SignUp() {
     },
   });
 
+  // ------------RETURN-------------
   return (
-    <div>
+    <div className="sign-in-up-form-box">
       <ToastContainer />
       <form onSubmit={formik.handleSubmit}>
-        <label htmlFor="username">User name</label>
-        <input
-          name="username"
-          placeholder="Username"
-          value={formik.values.username}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-        />
-        {formik.touched.username && formik.errors.username ? (
-          <div>{formik.errors.username}</div>
-        ) : null}
-        <label htmlFor="email">Email</label>
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={formik.values.email}
-          onChange={formik.handleChange}
-        />
-        {formik.touched.email && formik.errors.email ? (
-          <div>{formik.errors.email}</div>
-        ) : null}
-        <label htmlFor="password">Password</label>
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={formik.values.password}
-          onChange={formik.handleChange}
-        />
-        {formik.touched.password && formik.errors.password ? (
-          <div>{formik.errors.password}</div>
-        ) : null}
-        <label htmlFor="password2">Confirm Password</label>
-        <input
-          name="password2"
-          type="password"
-          placeholder="Password Confirm"
-          value={formik.values.password2}
-          onChange={formik.handleChange}
-        />
-        {formik.touched.password2 && formik.errors.password2 ? (
-          <div>{formik.errors.password2}</div>
-        ) : null}
+        <div style={iconContainerStyle}>
+          <div style={iconStyle}>
+            <PersonIcon fontSize="small" />
+          </div>
+          <input
+            name="username"
+            placeholder="Username"
+            value={formik.values.username}
+            onChange={formik.handleChange}
+          />
+          {formik.touched.username && formik.errors.username ? (
+            <div className="error-message">{formik.errors.username}</div>
+          ) : null}
+        </div>
+        <div style={iconContainerStyle}>
+          <div style={iconStyle}>
+            <EmailIcon fontSize="small" />
+          </div>
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+          />
+          {formik.touched.email && formik.errors.email ? (
+            <div className="error-message">{formik.errors.email}</div>
+          ) : null}
+        </div>
+        <div style={iconContainerStyle}>
+          <div style={iconStyle}>
+            <LockIcon fontSize="small" />
+          </div>
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={formik.values.password}
+            onChange={formik.handleChange}
+          />
+          {formik.touched.password && formik.errors.password ? (
+            <div className="error-message">{formik.errors.password}</div>
+          ) : null}
+        </div>
+        <div style={iconContainerStyle}>
+          <div style={iconStyle}>
+            <LockIcon fontSize="small" />
+          </div>
+          <input
+            name="password2"
+            type="password"
+            placeholder="Confirm Password"
+            value={formik.values.password2}
+            onChange={formik.handleChange}
+          />
+          {formik.touched.password2 && formik.errors.password2 ? (
+            <div className="error-message">{formik.errors.password2}</div>
+          ) : null}
+        </div>
 
-        <button type="submit">Submit</button>
-        <button>Cancel</button>
+        <button className="btn" type="submit">
+          Submit
+        </button>
+        <button className="btn" onClick={refresh}>
+          Cancel
+        </button>
       </form>
     </div>
   );
