@@ -40,9 +40,6 @@ export default function Navbar() {
   const handleProfileOpen = () => {
     history.push("/profile");
   };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleMainPage = () => {
     history.push("/home");
@@ -51,7 +48,6 @@ export default function Navbar() {
     localStorage.removeItem("token");
     setToken(null);
     history.push("/home");
-    setAnchorEl(null);
   };
 
   return (

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
+
 import "./Landing.css";
 
 import SignUp from "../components/SignUp";
@@ -6,15 +8,20 @@ import SignIn from "../components/SignIn";
 
 function Landing() {
   const [showSI, setShowSI] = useState(true);
+  const history = useHistory();
 
   const toggleView = () => {
     setShowSI(!showSI);
   };
 
+  const goHome = () => {
+    history.push("/home");
+  };
+
   return (
     <div className="hero">
       <div className="title-container">
-        <h1 className="title">The Blog</h1>
+        <h1 className="title">Nord Blog</h1>
       </div>
       <div className="form-box">
         <div className="button-box">
@@ -30,6 +37,9 @@ function Landing() {
           </button>
         </div>
         {showSI ? <SignIn /> : <SignUp />}
+      </div>
+      <div className="continue" onClick={goHome}>
+        <a>Continue without an account</a>
       </div>
     </div>
   );
