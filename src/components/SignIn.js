@@ -38,7 +38,7 @@ export default function SignIn() {
 
   // ------------RETURN-------------
   return (
-    <div>
+    <div className="form-box">
       <form onSubmit={formik.handleSubmit}>
         <label htmlFor="username">User name</label>
         <input

@@ -1,0 +1,77 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+}
+
+.hero {
+  height: 100vh;
+  width: 100vw;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(201, 86, 86, 0.1)),
+    url("../assets/temp_back.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.title-container {
+  margin-top: -5rem;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  color: #fff;
+  font-size: 3rem;
+}
+
+.form-box {
+  width: 380px;
+  height: 480px;
+  position: relative;
+  background: #fff;
+  padding: 5px;
+  border-radius: 20px;
+}
+.button-box {
+  display: flex;
+  justify-content: space-between;
+  width: 220px;
+  margin: 2rem auto;
+  position: relative;
+  border-radius: 40px;
+  background-color: blueviolet;
+  /* box-shadow: 0 0 10px 10px blueviolet; */
+}
+.toggle-btn {
+  padding: 9px 20px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  outline: none;
+  position: relative;
+}
+.float-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 110px;
+  height: 100%;
+  background: linear-gradient(to right, #ff10f5, #ffad06);
+  border-radius: 40px;
+  transition: 0.5s;
+}
+
+#sign-in {
+  left: 50px;
+}
+
+#sign-up {
+  right: 50px;
+}
