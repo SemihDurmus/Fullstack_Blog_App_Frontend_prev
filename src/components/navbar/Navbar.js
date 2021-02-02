@@ -1,8 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-
-import axios from "axios";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -47,8 +45,24 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     setToken(null);
+    alert("You successfully logged out.");
     history.push("/home");
   };
+
+  // const fetchUserProfile = async (
+  //   profilePath = `http://fs-blog-app-backend-django.herokuapp.com/user/${user.id}/profile/`
+  // ) => {
+  //   try {
+  //     const result = await axios.get(profilePath);
+  //     setProfile(result?.data?.image);
+  //   } catch ({ response }) {
+  //     if (response) {
+  //       console.log("No data");
+  //     } else {
+  //       console.log("Something went wrong!");
+  //     }
+  //   }
+  // };
 
   return (
     <div className={classes.grow}>
@@ -77,9 +91,15 @@ export default function Navbar() {
                 >
                   <AccountCircle />
                 </IconButton>
+                <Button onClick={handleLogout} color="inherit">
+                  Logout
+                </Button>
               </div>
             ) : (
               <>
+                <Button onClick={() => history.push("/")} color="inherit">
+                  Login
+                </Button>
                 <Button onClick={() => history.push("/")} color="inherit">
                   Register
                 </Button>
