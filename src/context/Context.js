@@ -6,7 +6,7 @@ export const Context = createContext();
 const { Provider } = Context;
 
 export const ContextProvider = ({ children }) => {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token"));
   return <Provider value={{ token, setToken }}>{children}</Provider>;
 };
 

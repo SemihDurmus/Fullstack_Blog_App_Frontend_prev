@@ -12,7 +12,7 @@ import { postData } from "../utils/Utils";
 // ------------MAIN FUNCTION------------------------
 export default function SignIn() {
   const { token, setToken } = useContext(Context);
-  const [signInError, setSignInError] = useState("");
+  const [signInError, setSignInError] = useState(null);
   const history = useHistory();
 
   const fetchData = async (values) => {
@@ -40,6 +40,7 @@ export default function SignIn() {
       password: "",
     },
     onSubmit: (values) => {
+      console.log(values);
       if (values.username === "") {
         setSignInError("Enter username");
       } else if (values.password === "") {
