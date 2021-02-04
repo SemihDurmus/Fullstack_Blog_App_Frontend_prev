@@ -7,11 +7,11 @@ import "./HomePagination.css";
 import Navbar from "../components/navbar/Navbar";
 import PostCard from "../components/card/Card";
 import { SearchBox } from "../components/searchbox/SearchBox";
+import { CategoryDropDown } from "../components/categorydropdown/CategoryDropDown";
 
-// import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-// import Box from "@material-ui/core/Box";
 
 import { LoopCircleLoading } from "react-loadingg";
 
@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
     "& > *": {
       margin: theme.spacing(5),
     },
+    minHeight: "70vh",
   },
   paper: {
     height: 140,
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
 }));
+
 // -----------INLINE STYLES--------
 const searchContainerStyle = {
   width: "100%",
@@ -46,17 +48,36 @@ const paginationContainerStyle = {
   alignItems: "center",
   justifyContent: "center",
   marginBottom: "60px",
+  backgroundColor: "#f6f5f5",
 };
+const buttonStyle = {
+  padding: "10px",
+  outline: "none",
+};
+
 // ---------MAIN FUNCTION----------
 function Home() {
-  const [postList, setPostList] = useState([]);
-  // const [nextURL, setNextURL] = useState("");
+  const [postDisplayList, setPostDisplayList] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [filteredDataWithPagination, setFilteredDataWithPagination] = useState(
+    []
+  );
+  const [searchKeyword, setSearchKeyword] = useState("");
   const classes = useStyles();
+  const history = useHistory();
 
   // -------for pagination---------
   const [offset, setOffset] = useState(0);
   const [perPage] = useState(6);
   const [pageCount, setPageCount] = useState(0);
+
+  //-----------filter data---------
+  const filterPosts = (keyword, data) => {
+    const filterPostList = data.filter((item) => {
+      return item.title.toUpperCase().indexOf(keyword.toUpperCase()) > -1;
+    });
+    setFilteredData(filterPostList);
+  };
 
   // --------fetch data------------
   const fetchData = async (
@@ -64,13 +85,8 @@ function Home() {
   ) => {
     try {
       const result = await axios.get(postListURL);
-      // setPostList([...postList, ...result?.data?.results]);
       const data = result?.data;
-      setPageCount(Math.ceil(data.length / perPage));
-      const slice = data.slice(offset, offset + perPage);
-      setPostList(slice);
-      // setPostList([...postList, ...result?.data]);
-      // setNextURL(result?.data?.next);
+      setPostDisplayList(data);
     } catch ({ response }) {
       if (response) {
         console.log("No data");
@@ -80,42 +96,82 @@ function Home() {
     }
   };
 
-  const handlePageClick = (e) => {
-    const selectedPage = e.selected;
-    setOffset(selectedPage + 1);
+  const filteredDataFunc = () => {
+    if (searchKeyword !== "") {
+      filterPosts(searchKeyword, postDisplayList);
+    } else {
+      setFilteredData(postDisplayList);
+    }
   };
 
+  const handlePageClick = (e) => {
+    const selectedPage = e.selected;
+    setOffset(selectedPage * 6);
+  };
+
+  function paginationFunc() {
+    const slice = filteredData.slice(offset, offset + perPage);
+    setPageCount(Math.ceil(filteredData.length / perPage));
+    setFilteredDataWithPagination(slice);
+  }
+  // ----------useEffects--------
   useEffect(() => {
     fetchData();
-  }, [offset]);
+  }, []);
 
-  // const handleLoadMore = () => {
-  //   fetchData(nextURL);
-  // };
+  useEffect(() => {
+    filteredDataFunc();
+  }, [searchKeyword, postDisplayList]);
+
+  useEffect(() => {
+    paginationFunc();
+  }, [filteredData, offset, postDisplayList]);
 
   // -----------------RETURN------------------
-  return !postList?.length ? (
+  return !postDisplayList?.length ? (
     <div>
-      <Navbar />
+      <Navbar setKeyword={setSearchKeyword} />
       <div style={searchContainerStyle}>
         <SearchBox />
       </div>
       <LoopCircleLoading />
     </div>
   ) : (
-    <div style={{ backgroundColor: "#d9dab0" }}>
-      <Navbar />
+    <div
+      style={{
+        backgroundColor: "#f6f5f5",
+        minHeight: "100vh",
+        overflow: "hidden",
+      }}
+    >
+      <Navbar setKeyword={setSearchKeyword} />
       <div style={searchContainerStyle}>
-        <SearchBox />
+        <SearchBox setKeyword={setSearchKeyword} />
+      </div>
+      <div style={searchContainerStyle}>
+        <CategoryDropDown />
       </div>
       <Grid container className={classes.root} spacing={5} justify="center">
         <Grid item xs={12}>
           <Grid container justify="center" spacing={5}>
-            {postList
-              ? postList.map((item, id) => {
-                  return <PostCard item={item} id={id} />;
-                })
-              : "No data available"}
+            {filteredData.length ? (
+              filteredDataWithPagination.map((item, id) => {
+                return <PostCard item={item} id={id} />;
+              })
+            ) : (
+              <div>
+                <p>"{searchKeyword}" is not available in bloglist titles.</p>
+                <Box p={9}>
+                  <button
+                    type=""
+                    onClick={() => setSearchKeyword("")}
+                    style={buttonStyle}
+                  >
+                    Back to HomePage
+                  </button>
+                </Box>
+              </div>
+            )}
           </Grid>
         </Grid>
       </Grid>
@@ -134,20 +190,6 @@ function Home() {
           activeClassName={"active"}
         />
       </div>
-
-      {/* <Box display="flex" justifyContent="center" m={1} p={1} bgcolor="#d9dab0">
-        <Box p={1} style={{ backgroundColor: "#d9dab0" }}>
-          {nextURL ? (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => handleLoadMore()}
-            >
-              View More
-            </Button>
-          ) : null}
-        </Box>
-      </Box> */}
     </div>
   );
 }

@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PostCard({ item }) {
+export default function PostCard({ item, id }) {
   const classes = useStyles();
 
   return (

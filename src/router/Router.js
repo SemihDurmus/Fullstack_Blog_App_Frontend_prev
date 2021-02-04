@@ -12,7 +12,6 @@ export default function Router() {
     <BrowserRouter>
       <ContextProvider>
         <Suspense fallback="<div>loading...</div>">
-          {/* <Navbar /> */}
           <Switch>
             <Route path="/" component={Landing} exact />
             <Route path="/home" component={Home} exact />
