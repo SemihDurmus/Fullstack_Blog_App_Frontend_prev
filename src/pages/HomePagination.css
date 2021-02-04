@@ -11,7 +11,9 @@
 }
 .pagination > li > a {
   border: 1px solid #351f39;
+  border-radius: 18px;
   padding: 5px 10px;
+  margin: 8px;
   outline: none;
   cursor: pointer;
 }
@@ -28,10 +30,18 @@
 .pagination > li > a,
 .pagination > li > span {
   color: #351f39;
+  cursor: pointer;
+  transition: 0.5s;
+}
+.pagination > li > a:hover,
+.pagination > li > span:hover {
+  box-shadow: 0 0 3px #351f39, 0 0 7px #351f39;
 }
 .pagination > li:first-child > a,
 .pagination > li:first-child > span,
 .pagination > li:last-child > a,
 .pagination > li:last-child > span {
-  border-radius: unset;
+  font-weight: bold;
+  border: 1px solid;
+  cursor: pointer;
 }

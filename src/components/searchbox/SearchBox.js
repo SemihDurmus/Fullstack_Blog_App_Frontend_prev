@@ -1,40 +1,30 @@
-import { useContext, useRef, useState } from "react";
+import { useRef } from "react";
 import {
   StyledSearchBox,
   StyledSearchInput,
   StyledSearchButton,
 } from "./SearchBoxStyle";
-// import { MovieContext } from "../../Movie";
 
 import SearchIcon from "@material-ui/icons/Search";
 
-export const SearchBox = () => {
-  const [inputValue, setInputValue] = useState("");
+export const SearchBox = ({ setKeyword }) => {
   const inputRef = useRef();
-
-  //   const { setSearchKeyword } = useContext(MovieContext);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      alert(inputRef?.current?.value);
-      //   setSearchKeyword(inputRef?.current?.value);
+      setKeyword(inputRef?.current?.value);
+      inputRef.current.value = "";
     }
   };
 
   return (
     <StyledSearchBox>
-      <StyledSearchInput
-        ref={inputRef}
-        color="black"
-        isColored
-        onChange={(evt) => setInputValue(evt.target.value)}
-        onKeyDown={handleKeyDown}
-      />
+      <StyledSearchInput ref={inputRef} onKeyDown={handleKeyDown} />
       <StyledSearchButton
-        onClick={
-          () => alert("clicked")
-          // setSearchKeyword(inputRef?.current?.value)
-        }
+        onClick={() => {
+          setKeyword(inputRef?.current?.value);
+          inputRef.current.value = "";
+        }}
       >
         <SearchIcon />
       </StyledSearchButton>
