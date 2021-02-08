@@ -1,47 +1,62 @@
-import { useRef } from "react";
+import { useState, useEffect, useContext } from "react";
+import { Context } from "../../context/Context";
 import Select from "react-select";
 
-import { StyledButton } from "./CategoryDropDownStyle";
+import axios from "axios";
 
-export const CategoryDropDown = () => {
-  const inputRef = useRef();
+export const CategoryDropDown = ({ setSelectedOption }) => {
+  const [categories, setCategories] = useState([]);
 
-  // const handleKeyDown = (e) => {
-  //   if (e.key === "Enter") {
-  //     setKeyword(inputRef?.current?.value);
-  //     inputRef.current.value = "";
-  //   }
-  //};
+  const { categoryDisplay, setCategoryDisplay, reset } = useContext(Context);
 
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
+  // --------fetch category list------------
+  const fetchData = async (
+    postListURL = "https://fs-blog-backend.herokuapp.com/api/category-list/"
+  ) => {
+    try {
+      const result = await axios.get(postListURL);
+      const data = result?.data;
+      setCategories(data);
+    } catch ({ response }) {
+      if (response) {
+        console.log("No data");
+      } else {
+        console.log("Something went wrong!");
+      }
+    }
+  };
+
+  function selectedFunc(e) {
+    return setSelectedOption(e.map((x) => x.value));
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    setCategoryDisplay(
+      categories.map((item) => {
+        return {
+          value: item.name,
+          label: item.name.charAt(0).toUpperCase() + item.name.slice(1),
+        };
+      })
+    );
+  }, [categories]);
 
   return (
-    <div>
-      {/* <StyledButton />
-
+    <div style={{ minWidth: "250px" }}>
       <Select
-        defaultValue={[options[1], options[2]]}
         isMulti
-        name="colors"
-        options={options}
+        name="categories"
+        options={categoryDisplay}
         className="basic-multi-select"
         classNamePrefix="select"
-      /> */}
+        onChange={(e) => {
+          selectedFunc(e);
+        }}
+      />
     </div>
-    // <StyledSearchBox>
-    //   <StyledSearchInput ref={inputRef} onKeyDown={handleKeyDown} />
-    //   <StyledSearchButton
-    //     onClick={() => {
-    //       setKeyword(inputRef?.current?.value);
-    //       inputRef.current.value = "";
-    //     }}
-    //   >
-    //     <SearchIcon />
-    //   </StyledSearchButton>
-    // </StyledSearchBox>
   );
 };

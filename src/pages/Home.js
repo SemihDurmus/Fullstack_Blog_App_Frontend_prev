@@ -1,8 +1,9 @@
-import { useHistory } from "react-router-dom";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import ReactPaginate from "react-paginate";
 import "./HomePagination.css";
+
+import { Context } from "../context/Context";
 
 import Navbar from "../components/navbar/Navbar";
 import PostCard from "../components/card/Card";
@@ -57,27 +58,27 @@ const buttonStyle = {
 
 // ---------MAIN FUNCTION----------
 function Home() {
+  const {
+    keyword,
+    setKeyword,
+    categoryDisplay,
+    selectedOption,
+    setSelectedOption,
+  } = useContext(Context);
+
   const [postDisplayList, setPostDisplayList] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [sanitizedData, setSanitizedData] = useState([]);
   const [filteredDataWithPagination, setFilteredDataWithPagination] = useState(
     []
   );
-  const [searchKeyword, setSearchKeyword] = useState("");
+
   const classes = useStyles();
-  const history = useHistory();
 
   // -------for pagination---------
   const [offset, setOffset] = useState(0);
   const [perPage] = useState(6);
   const [pageCount, setPageCount] = useState(0);
-
-  //-----------filter data---------
-  const filterPosts = (keyword, data) => {
-    const filterPostList = data.filter((item) => {
-      return item.title.toUpperCase().indexOf(keyword.toUpperCase()) > -1;
-    });
-    setFilteredData(filterPostList);
-  };
 
   // --------fetch data------------
   const fetchData = async (
@@ -96,24 +97,47 @@ function Home() {
     }
   };
 
+  //-----------filter data---------
+  const filterPosts = (keyword, data) => {
+    const filterPostList = data.filter((item) => {
+      return item.title.toUpperCase().indexOf(keyword.toUpperCase()) > -1;
+    });
+    setFilteredData(filterPostList);
+  };
+
   const filteredDataFunc = () => {
-    if (searchKeyword !== "") {
-      filterPosts(searchKeyword, postDisplayList);
+    if (keyword !== "") {
+      filterPosts(keyword, postDisplayList);
     } else {
       setFilteredData(postDisplayList);
     }
   };
 
+  // -------category filter-------------
+  const categoryFilterData = [];
+
+  function categoryFilterFunc() {
+    selectedOption.forEach((e) => {
+      filteredData.forEach((x) => {
+        if (e === x.category) {
+          categoryFilterData.push(x);
+        }
+      });
+    });
+  }
+
+  // ---------------Pagination logic---------------------------
   const handlePageClick = (e) => {
     const selectedPage = e.selected;
     setOffset(selectedPage * 6);
   };
 
   function paginationFunc() {
-    const slice = filteredData.slice(offset, offset + perPage);
-    setPageCount(Math.ceil(filteredData.length / perPage));
+    const slice = sanitizedData.slice(offset, offset + perPage);
+    setPageCount(Math.ceil(sanitizedData.length / perPage));
     setFilteredDataWithPagination(slice);
   }
+
   // ----------useEffects--------
   useEffect(() => {
     fetchData();
@@ -121,16 +145,28 @@ function Home() {
 
   useEffect(() => {
     filteredDataFunc();
-  }, [searchKeyword, postDisplayList]);
+  }, [keyword, postDisplayList]);
+
+  useEffect(() => {
+    categoryFilterFunc();
+    setSanitizedData(categoryFilterData);
+  }, [filteredData, selectedOption]);
 
   useEffect(() => {
     paginationFunc();
-  }, [filteredData, offset, postDisplayList]);
+    console.log(sanitizedData);
+  }, [sanitizedData, offset, postDisplayList]);
+
+  useEffect(() => {
+    if (!selectedOption.length) {
+      setSelectedOption(categoryDisplay.map((e) => e.value));
+    }
+  }, [selectedOption]);
 
   // -----------------RETURN------------------
   return !postDisplayList?.length ? (
     <div>
-      <Navbar setKeyword={setSearchKeyword} />
+      <Navbar />
       <div style={searchContainerStyle}>
         <SearchBox />
       </div>
@@ -144,27 +180,44 @@ function Home() {
         overflow: "hidden",
       }}
     >
-      <Navbar setKeyword={setSearchKeyword} />
-      <div style={searchContainerStyle}>
-        <SearchBox setKeyword={setSearchKeyword} />
+      <Navbar />
+      <div style={{ ...searchContainerStyle, position: "relative" }}>
+        <SearchBox />
+        <div
+          style={{ ...searchContainerStyle, position: "absolute", top: "10px" }}
+        >
+          {keyword?.length ? (
+            <p style={{ color: "tomato", fontWeight: "bolder" }}>
+              Results shown with keyword: "{keyword}"
+            </p>
+          ) : null}
+        </div>
       </div>
-      <div style={searchContainerStyle}>
-        <CategoryDropDown />
+      <div style={{ ...searchContainerStyle, marginTop: "10px" }}>
+        <CategoryDropDown
+          selectedOption={selectedOption}
+          setSelectedOption={setSelectedOption}
+        />
       </div>
       <Grid container className={classes.root} spacing={5} justify="center">
         <Grid item xs={12}>
           <Grid container justify="center" spacing={5}>
-            {filteredData.length ? (
+            {sanitizedData.length ? (
               filteredDataWithPagination.map((item, id) => {
                 return <PostCard item={item} id={id} />;
               })
             ) : (
               <div>
-                <p>"{searchKeyword}" is not available in bloglist titles.</p>
+                {keyword?.length ? (
+                  <p>"{keyword}" is not available in bloglist titles.</p>
+                ) : null}
                 <Box p={9}>
                   <button
                     type=""
-                    onClick={() => setSearchKeyword("")}
+                    onClick={() => {
+                      setKeyword("");
+                      setSelectedOption(categoryDisplay.map((e) => e.value));
+                    }}
                     style={buttonStyle}
                   >
                     Back to HomePage
