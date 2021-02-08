@@ -7,7 +7,28 @@ const { Provider } = Context;
 
 export const ContextProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
-  return <Provider value={{ token, setToken }}>{children}</Provider>;
+  const [keyword, setKeyword] = useState("");
+  const [categoryDisplay, setCategoryDisplay] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(
+    categoryDisplay.map((e) => e.value)
+  );
+
+  return (
+    <Provider
+      value={{
+        token,
+        setToken,
+        keyword,
+        setKeyword,
+        categoryDisplay,
+        setCategoryDisplay,
+        selectedOption,
+        setSelectedOption,
+      }}
+    >
+      {children}
+    </Provider>
+  );
 };
 
 ContextProvider.propTypes = {
