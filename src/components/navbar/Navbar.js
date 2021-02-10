@@ -1,13 +1,13 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import axios from "axios";
+
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-
-import axios from "axios";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import AccountCircle from "@material-ui/icons/AccountCircle";
+import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 
 import MenuListComposition from "./NavbarMenuList";
@@ -30,10 +30,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// -------------MAIN FUNCTION-------------
 export default function Navbar() {
   const history = useHistory();
-  const { token, setToken } = useContext(Context);
-  const [profile, setProfile] = useState([]);
+  const {
+    token,
+    setToken,
+    setKeyword,
+    setSelectedOption,
+    categoryDisplay,
+  } = useContext(Context);
+  const [image, setImage] = useState("");
 
   const classes = useStyles();
 
@@ -42,13 +49,45 @@ export default function Navbar() {
   };
 
   const handleMainPage = () => {
+    const resetSearchSettings = () => {
+      setKeyword("");
+      setSelectedOption(categoryDisplay.map((e) => e.value));
+    };
+    resetSearchSettings();
     history.push("/home");
   };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     setToken(null);
+    alert("You successfully logged out.");
     history.push("/home");
   };
+
+  const fetchUserProfile = async (
+    profilePath = `https://fs-blog-backend.herokuapp.com/user/profile/`
+  ) => {
+    try {
+      const result = await axios.get(profilePath, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: token ? "Token " + token : null,
+        },
+      });
+      setImage(result?.data?.image);
+    } catch ({ response }) {
+      if (response) {
+        console.log("No data");
+      } else {
+        console.log("Something went wrong!");
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
 
   return (
     <div className={classes.grow}>
@@ -75,11 +114,21 @@ export default function Navbar() {
                   onClick={handleProfileOpen}
                   color="inherit"
                 >
-                  <AccountCircle />
+                  <Avatar
+                    alt="User Avatar"
+                    src={image}
+                    className={classes.small}
+                  />
                 </IconButton>
+                <Button onClick={handleLogout} color="inherit">
+                  Logout
+                </Button>
               </div>
             ) : (
               <>
+                <Button onClick={() => history.push("/")} color="inherit">
+                  Login
+                </Button>
                 <Button onClick={() => history.push("/")} color="inherit">
                   Register
                 </Button>
