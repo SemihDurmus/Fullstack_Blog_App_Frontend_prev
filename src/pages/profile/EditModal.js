@@ -1,41 +1,38 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
+import "./EditModalStyle.css";
+import { putData } from "../../utils/Utils";
 
-function rand() {
-  return Math.round(Math.random() * 20) - 10;
-}
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-function getModalStyle() {
-  const top = 50 + rand();
-  const left = 50 + rand();
+//-------------MAIN FUNC------------
+export default function EditModal({ open, setOpen, profile, refresh }) {
+  // ------------FORMIK-------------
+  const formik = useFormik({
+    initialValues: {
+      user: profile.user,
+      image: profile.image,
+      bio: profile.bio,
+    },
+    validationSchema: Yup.object({
+      image: Yup.string(),
+      bio: Yup.string().max(10000, "Must be less than 10000 chars"),
+    }),
+    onSubmit: (values) => {
+      fetchData(values);
+      setOpen(false);
+    },
+  });
 
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
-  };
-}
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    position: "absolute",
-    width: 400,
-    backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-}));
-
-export default function EditModal() {
-  const classes = useStyles();
-  // getModalStyle is not a pure function, we roll the style only on the first render
-  const [modalStyle] = React.useState(getModalStyle);
-  const [open, setOpen] = React.useState(false);
-
-  const handleOpen = () => {
-    setOpen(true);
+  const fetchData = (values) => {
+    putData("user/profile/", values)
+      .then((data, err) => {
+        alert("Successfully updated!");
+      })
+      .catch((err) => {
+        alert(err?.message || "An error occured");
+      });
   };
 
   const handleClose = () => {
@@ -43,25 +40,63 @@ export default function EditModal() {
   };
 
   const body = (
-    <div style={modalStyle} className={classes.paper}>
-      <h2 id="simple-modal-title">Text in a modal</h2>
-      <p id="simple-modal-description">
-        Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-      </p>
-      <EditModal />
+    <div className="modalContainer">
+      <form onSubmit={formik.handleSubmit}>
+        <div className="itemContainer">
+          <h2 style={{ textAlign: "center" }}>{profile.user}'s Profile Edit</h2>
+        </div>
+        <div className="itemContainer">
+          <div className="label">
+            <label htmlFor="image">Image URL</label>
+          </div>
+          <input
+            className="input"
+            name="image"
+            type="text"
+            value={formik.values.image}
+            onChange={formik.handleChange}
+          />
+          {formik.touched.image && formik.errors.image ? (
+            <div className="error-message">{formik.errors.image}</div>
+          ) : null}
+        </div>
+        <div className="itemContainer">
+          <div className="label">
+            <label htmlFor="bio">Biography</label>
+          </div>
+          <textarea
+            className="textarea"
+            style={{ minHeight: "100px", overflow: "scroll" }}
+            name="bio"
+            type="text"
+            value={formik.values.bio}
+            onChange={formik.handleChange}
+          />
+          {formik.touched.bio && formik.errors.bio ? (
+            <div className="error-message">{formik.errors.bio}</div>
+          ) : null}
+        </div>
+        <div className="buttonContainer">
+          <button className="btn-submit" type="submit" onClick={refresh}>
+            Submit
+          </button>
+
+          <button className="btn-cancel" onClick={() => setOpen(false)}>
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 
   return (
     <div>
-      <button type="button" onClick={handleOpen}>
-        Open Modal
-      </button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
+        hideBackdrop={true}
       >
         {body}
       </Modal>

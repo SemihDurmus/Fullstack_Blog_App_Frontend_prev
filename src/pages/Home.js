@@ -141,6 +141,7 @@ function Home() {
   // ----------useEffects--------
   useEffect(() => {
     fetchData();
+    console.log("token : ", localStorage.getItem("token"));
   }, []);
 
   useEffect(() => {
@@ -154,7 +155,7 @@ function Home() {
 
   useEffect(() => {
     paginationFunc();
-    console.log(sanitizedData);
+    // console.log(sanitizedData);
   }, [sanitizedData, offset, postDisplayList]);
 
   useEffect(() => {
@@ -181,13 +182,26 @@ function Home() {
       }}
     >
       <Navbar />
-      <div style={{ ...searchContainerStyle, position: "relative" }}>
+      <div
+        style={{
+          ...searchContainerStyle,
+          width: "50%",
+          margin: "30px auto auto auto",
+        }}
+      >
         <SearchBox />
         <div
-          style={{ ...searchContainerStyle, position: "absolute", top: "10px" }}
+          style={{
+            ...searchContainerStyle,
+            width: "50%",
+            position: "absolute",
+            top: "107px",
+          }}
         >
           {keyword?.length ? (
-            <p style={{ color: "tomato", fontWeight: "bolder" }}>
+            <p
+              style={{ color: "tomato", fontWeight: "bolder", padding: "10px" }}
+            >
               Results shown with keyword: "{keyword}"
             </p>
           ) : null}
@@ -204,7 +218,7 @@ function Home() {
           <Grid container justify="center" spacing={5}>
             {sanitizedData.length ? (
               filteredDataWithPagination.map((item, id) => {
-                return <PostCard item={item} id={id} />;
+                return <PostCard item={item} itemStatus={false} id={id} />;
               })
             ) : (
               <div>

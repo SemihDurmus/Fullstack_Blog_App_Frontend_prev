@@ -56,13 +56,6 @@ export default function MenuListComposition() {
 
   return (
     <div className={classes.root}>
-      {/* <Paper className={classes.paper}>
-        <MenuList>
-          <MenuItem>Profile</MenuItem>
-          <MenuItem>My account</MenuItem>
-          <MenuItem>Logout</MenuItem>
-        </MenuList>
-      </Paper> */}
       <div>
         <Button
           ref={anchorRef}

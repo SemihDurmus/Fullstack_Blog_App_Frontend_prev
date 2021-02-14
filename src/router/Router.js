@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { ContextProvider } from "../context/Context";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import Landing from "../pages/Landing";
@@ -8,23 +7,28 @@ import Contact from "../pages/Contact";
 import ProfilePage from "../pages/profile/Profile";
 
 export default function Router() {
+  const token = localStorage.getItem("token");
   return (
     <BrowserRouter>
       <ContextProvider>
-        <Suspense fallback="<div>loading...</div>">
-          <Switch>
-            <Route path="/" component={Landing} exact />
-            <Route path="/home" component={Home} exact />
-            <Route path="/about" component={About} exact />
-            <Route path="/contact" component={Contact} exact />
-            <Route path="/profile" component={ProfilePage} exact />
-            {/* 
+        <Switch>
+          <Route path="/" component={Landing} exact />
+          <Route path="/home" component={Home} exact />
+          <Route path="/about" component={About} exact />
+          <Route path="/contact" component={Contact} exact />
+          {token ? (
+            <>
+              <Route path="/profile" component={ProfilePage} exact />
+            </>
+          ) : (
+            <Redirect to="/" />
+          )}
+          {/* 
             <Route path="/detail/:slug" component={PostDetail} exact />
-           }
-            {/* <Route path="/create" component={PostPage} exact/>
+             */}
+          {/* <Route path="/create" component={PostPage} exact/>
               <Route path="/edit/:slug" component={CustomPostPage} exact/> */}
-          </Switch>
-        </Suspense>
+        </Switch>
       </ContextProvider>
     </BrowserRouter>
   );

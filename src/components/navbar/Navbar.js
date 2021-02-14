@@ -9,6 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 import MenuListComposition from "./NavbarMenuList";
 import { Context } from "../../context/Context";
@@ -39,6 +40,7 @@ export default function Navbar() {
     setKeyword,
     setSelectedOption,
     categoryDisplay,
+    setStoriesOpen,
   } = useContext(Context);
   const [image, setImage] = useState("");
 
@@ -46,6 +48,7 @@ export default function Navbar() {
 
   const handleProfileOpen = () => {
     history.push("/profile");
+    setStoriesOpen(false);
   };
 
   const handleMainPage = () => {
@@ -59,6 +62,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     setToken(null);
     alert("You successfully logged out.");
     history.push("/home");
@@ -121,7 +125,7 @@ export default function Navbar() {
                   />
                 </IconButton>
                 <Button onClick={handleLogout} color="inherit">
-                  Logout
+                  <ExitToAppIcon fontSize="large" />
                 </Button>
               </div>
             ) : (

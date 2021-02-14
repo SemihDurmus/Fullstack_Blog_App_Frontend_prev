@@ -7,15 +7,16 @@ import EmailIcon from "@material-ui/icons/Email";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { postData } from "../utils/Utils";
-import { toast, ToastContainer } from "react-toastify";
+// import { toast, ToastContainer } from "react-toastify";
 
 // ------------MAIN FUNCTION------------------------
 export default function SignUp() {
   const fetchData = (values) => {
     postData("user/register/", values)
       .then((data, err) => {
-        toast("Successfully registered");
+        // toast("Successfully registered");
         alert("Successfully registered, You can Log In now");
+        // refresh();
       })
       .catch((err) => {
         alert(err?.message || "An error occured");
@@ -69,7 +70,7 @@ export default function SignUp() {
   // ------------RETURN-------------
   return (
     <div className="sign-in-up-form-box">
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <form onSubmit={formik.handleSubmit}>
         <div style={iconContainerStyle}>
           <div style={iconStyle}>
