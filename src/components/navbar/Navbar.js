@@ -80,6 +80,7 @@ export default function Navbar() {
         },
       });
       setImage(result?.data?.image);
+      console.log("Profile info fetched");
     } catch ({ response }) {
       if (response) {
         console.log("No data");
